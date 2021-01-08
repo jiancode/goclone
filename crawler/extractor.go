@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"github.com/imthaghost/goclone/parser"
 )
 
 // file extension map for directing files to their proper directory in O(1) time
@@ -32,17 +30,20 @@ func Extractor(link string, projectPath string) {
 	// get the html body
 	resp, err := http.Get(link)
 	if err != nil {
-		panic(err)
+		//panic(err)
+		return
 	}
 
 	// Closure
 	defer resp.Body.Close()
+	/***
 	// file base
 	base := parser.URLFilename(link)
 	// store the old ext, in special cases the ext is weird ".css?a134fv"
 	oldExt := filepath.Ext(base)
 	// new file extension
 	ext := parser.URLExtension(link)
+	println("link base", base)
 
 	// checks if there was a valid extension
 	if ext != "" {
@@ -54,14 +55,22 @@ func Extractor(link string, projectPath string) {
 			writeFileToPath(projectPath, base, oldExt, ext, dirPath, resp)
 		}
 	}
+	***/
+	dirPath, base := filepath.Split(link)
+
+	writeFileToPath(projectPath, base, dirPath, resp)
 }
 
-func writeFileToPath(projectPath, base, oldFileExt, newFileExt, fileDir string, resp *http.Response) {
-	var name = base[0 : len(base)-len(oldFileExt)]
-	document := name + newFileExt
+func writeFileToPath(projectPath, base, dirPath string, resp *http.Response) {
+	//var name = base[0 : len(base)-len(oldFileExt)]
+	//document := name + newFileExt
+	fileDir := filepath.Join(projectPath, dirPath)
+
+	os.MkdirAll(fileDir, os.ModePerm)
+	fileName := filepath.Join(fileDir, base)
 
 	// get the project name and path we use the path to
-	f, err := os.OpenFile(projectPath+"/"+fileDir+"/"+document, os.O_RDWR|os.O_CREATE, 0777)
+	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		panic(err)
 	}

@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gocolly/colly"
 )
@@ -11,7 +12,7 @@ import (
 func Collector(url string, projectPath string) {
 	// create a new collector
 	c := colly.NewCollector(
-		// asychronus boolean
+		// asynchronous boolean
 		colly.Async(true),
 	)
 
@@ -35,7 +36,7 @@ func Collector(url string, projectPath string) {
 		Extractor(e.Request.AbsoluteURL(link), projectPath)
 	})
 
-	// serach for all img tags with src attribute -- Images
+	// search for all img tags with src attribute -- Images
 	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
 		// src attribute
 		link := e.Attr("src")
@@ -43,6 +44,18 @@ func Collector(url string, projectPath string) {
 		fmt.Println("Img found", "-->", link)
 		// extraction
 		Extractor(e.Request.AbsoluteURL(link), projectPath)
+	})
+
+	// recursive internal link
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		// src attribute
+		link := e.Attr("href")
+		if !strings.HasPrefix(link, "http") {
+			// Print link
+			fmt.Printf("%s href internal link found --> %s\n", url, link)
+			// extraction
+			//Collector(e.Request.AbsoluteURL(link), projectPath)
+		}
 	})
 
 	//Before making a request
