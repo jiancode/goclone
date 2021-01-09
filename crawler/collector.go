@@ -56,7 +56,7 @@ func Collector(url string, projectPath string) {
 			sublink := e.Request.AbsoluteURL(link)
 			fmt.Printf("Downloading %s\n", sublink)
 			// extraction
-			c.Visit(sublink)
+			e.Request.Visit(sublink)
 			//Collector(sublink, projectPath)
 		}
 	})
