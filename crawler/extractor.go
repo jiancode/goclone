@@ -13,11 +13,12 @@ import (
 // downloads the contents to a correct directory in project folder
 // TODO add functionality for determining if page or sublink
 func Extractor(link string, projectPath string) {
-	fmt.Println("Extracting --> ", link)
+	fmt.Println("Extracting new --> ", link)
 
 	// get the html body
 	resp, err := http.Get(link)
 	if err != nil {
+		fmt.Println("Ignore bad link --> ", link)
 		//panic(err)
 		return
 	}
