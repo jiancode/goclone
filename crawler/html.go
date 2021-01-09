@@ -23,6 +23,7 @@ func HTMLExtractor(link string, projectPath string) {
 			base = "index.html"
 		}
 		fileExt := filepath.Ext(base)
+		fmt.Println("base file Ext:", fileExt)
 		if fileExt == "" || fileExt == ".php" {
 			dirPath = u.Path
 			base = "index.html"
