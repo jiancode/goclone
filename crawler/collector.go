@@ -52,7 +52,7 @@ func Collector(url string, projectPath string) {
 		link := e.Attr("href")
 		if strings.HasPrefix(link, "/") || strings.HasPrefix(link, ".") {
 			// Print link
-			fmt.Printf("%s href internal link found --> %s\n", url, link)
+			fmt.Printf("\n\n======================== href: %s\n", link)
 			sublink := e.Request.AbsoluteURL(link)
 			fmt.Printf("Downloading %s\n", sublink)
 			// extraction
