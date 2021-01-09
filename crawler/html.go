@@ -12,7 +12,7 @@ import (
 
 // HTMLExtractor ...
 func HTMLExtractor(link string, projectPath string) {
-	var fileName, fileDir string
+	var fileName, fileDir, base string
 	u, err := url.Parse(link)
 	p := strings.TrimSpace(u.Path)
 	if p == "" || p == "/" {
@@ -35,10 +35,13 @@ func HTMLExtractor(link string, projectPath string) {
 		if err == nil {
 			return
 		}
-		os.MkdirAll(fileDir, os.ModePerm)
+		err = os.MkdirAll(fileDir, os.ModePerm)
+		if err != nil {
+			fmt.Println("Mkdir error:", err)
+		}
 	}
 
-	fmt.Printf("Extracting %s --> %s", link, fileName)
+	fmt.Printf("Extracting html %s --> %s, %s", link, fileDir, base)
 	// get the html body
 	resp, err := http.Get(link)
 	if err != nil {
