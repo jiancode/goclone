@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/jianconnect/goclone/crawler"
 	"github.com/jianconnect/goclone/file"
@@ -9,20 +10,18 @@ import (
 )
 
 func main() {
-	url := args[0]
+	url := os.Args[1]
 
-	if Serve == true {
-		// grab the url from the
-		if !parser.ValidateURL(url) && !parser.ValidateDomain(url) {
-			fmt.Println("goclone <url>")
-		} else {
-			name := url
-			// CreateProject
-			projectpath := file.CreateProject(name)
-			// create the url
-			validURL := parser.CreateURL(name)
-			// Crawler
-			crawler.Crawl(validURL, projectpath)
-		}
+	if !parser.ValidateURL(url) && !parser.ValidateDomain(url) {
+		fmt.Println("goclone <url>")
+	} else {
+		name := url
+		// CreateProject
+		projectpath := file.CreateProject(name)
+		// create the url
+		//validURL := parser.CreateURL(name)
+		// Crawler
+		crawler.Crawl(url, projectpath)
 	}
+
 }
