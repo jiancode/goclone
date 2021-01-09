@@ -12,13 +12,13 @@ import (
 
 // HTMLExtractor ...
 func HTMLExtractor(link string, projectPath string) {
-	var fileName, fileDir, base string
+	var fileName, fileDir, base, dirPath string
 	u, err := url.Parse(link)
 	p := strings.TrimSpace(u.Path)
 	if p == "" || p == "/" {
 		fileName = filepath.Join(projectPath, "/", "index.html")
 	} else {
-		dirPath, base := filepath.Split(p)
+		dirPath, base = filepath.Split(p)
 		if base == "" {
 			base = "index.html"
 		}
@@ -47,7 +47,7 @@ func HTMLExtractor(link string, projectPath string) {
 		}
 	}
 
-	fmt.Printf("Extracting html %s --> %s, %s\n", link, fileDir, base)
+	fmt.Printf("Extracting HTML %s --> %s\n", link, fileName)
 	// get the html body
 	resp, err := http.Get(link)
 	if err != nil {
