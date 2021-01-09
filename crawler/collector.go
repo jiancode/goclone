@@ -2,6 +2,9 @@ package crawler
 
 import (
 	"fmt"
+	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -9,7 +12,7 @@ import (
 
 // Collector searches for css, js, and images within a given link
 // TODO improve for better performance
-func Collector(url string, projectPath string) {
+func Collector(urlStr string, projectPath string) {
 	// create a new collector
 	c := colly.NewCollector(
 		// asynchronous boolean
@@ -52,24 +55,41 @@ func Collector(url string, projectPath string) {
 		link := e.Attr("href")
 		if strings.HasPrefix(link, "/") || strings.HasPrefix(link, ".") {
 			// Print link
-			fmt.Printf("\n\n======================== href: %s\n", link)
+			fmt.Printf("\n\n>>>========================<<<\nSublink href: %s\n", link)
 			sublink := e.Request.AbsoluteURL(link)
 			fmt.Printf("Downloading %s\n", sublink)
+
 			// extraction
-			//e.Request.Visit(sublink)
-			Collector(sublink, projectPath)
+			u, err := url.Parse(sublink)
+			dirPath, base := filepath.Split(u.Path)
+			if base == "" {
+				base = "index.html"
+			}
+
+			if filepath.Ext(base) == "" {
+				dirPath = u.Path
+				base = "index.html"
+			}
+			fileDir := filepath.Join(projectPath, dirPath)
+			fileName := filepath.Join(fileDir, base)
+			// Check if page has downloaded
+			_, err = os.Stat(fileName)
+			if err != nil {
+				Collector(sublink, projectPath)
+			}
+
 		}
 	})
 
 	//Before making a request
 	c.OnRequest(func(r *colly.Request) {
 		link := r.URL.String()
-		if url == link {
+		if urlStr == link {
 			HTMLExtractor(link, projectPath)
 		}
 	})
 
 	// Visit each url and wait for stuff to load :)
-	c.Visit(url)
+	c.Visit(urlStr)
 	c.Wait()
 }

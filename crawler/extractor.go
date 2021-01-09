@@ -13,8 +13,18 @@ import (
 // downloads the contents to a correct directory in project folder
 // TODO add functionality for determining if page or sublink
 func Extractor(link string, projectPath string) {
-	fmt.Println("Extracting new --> ", link)
 
+	u, err := url.Parse(link)
+	dirPath, base := filepath.Split(u.Path)
+	//fmt.Printf("Download file: %s %s", dirPath, base)
+	fileName := filepath.Join(projectPath, dirPath, base)
+
+	_, err = os.Stat(fileName)
+	if err == nil {
+		return
+	}
+
+	fmt.Println("Extracting new --> ", link)
 	// get the html body
 	resp, err := http.Get(link)
 	if err != nil {
@@ -26,9 +36,6 @@ func Extractor(link string, projectPath string) {
 	// Closure
 	defer resp.Body.Close()
 
-	u, err := url.Parse(link)
-	dirPath, base := filepath.Split(u.Path)
-	//fmt.Printf("Download file: %s %s", dirPath, base)
 	writeFileToPath(projectPath, base, dirPath, resp)
 }
 
