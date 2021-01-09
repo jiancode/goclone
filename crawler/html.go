@@ -47,7 +47,7 @@ func HTMLExtractor(link string, projectPath string) {
 		}
 	}
 
-	fmt.Printf("Extracting html %s --> %s, %s", link, fileDir, base)
+	fmt.Printf("Extracting html %s --> %s, %s\n", link, fileDir, base)
 	// get the html body
 	resp, err := http.Get(link)
 	if err != nil {
