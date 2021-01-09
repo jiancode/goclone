@@ -7,31 +7,36 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // HTMLExtractor ...
 func HTMLExtractor(link string, projectPath string) {
+	var fileName, fileDir string
+	if link == "" || link == "/" {
+		fileName = filepath.Join(projectPath, "/", "index.html")
+	} else {
+		u, err := url.Parse(link)
+		p := strings.TrimSpace(u.Path)
+		dirPath, base := filepath.Split(p)
+		if base == "" {
+			base = "index.html"
+		}
 
-	u, err := url.Parse(link)
-	dirPath, base := filepath.Split(u.Path)
-	if base == "" {
-		base = "index.html"
+		if filepath.Ext(base) == "" {
+			dirPath = u.Path
+			base = "index.html"
+		}
+
+		fileDir = filepath.Join(projectPath, dirPath)
+		fileName = filepath.Join(fileDir, base)
+		// Check if page has downloaded
+		_, err = os.Stat(fileName)
+		if err == nil {
+			return
+		}
+		os.MkdirAll(fileDir, os.ModePerm)
 	}
-
-	if filepath.Ext(base) == "" {
-		dirPath = u.Path
-		base = "index.html"
-	}
-
-	fileDir := filepath.Join(projectPath, dirPath)
-	fileName := filepath.Join(fileDir, base)
-	// Check if page has downloaded
-	_, err = os.Stat(fileName)
-	if err == nil {
-		return
-	}
-
-	os.MkdirAll(fileDir, os.ModePerm)
 
 	fmt.Println("Extracting --> ", link)
 	// get the html body
