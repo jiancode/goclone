@@ -13,16 +13,15 @@ import (
 // HTMLExtractor ...
 func HTMLExtractor(link string, projectPath string) {
 	var fileName, fileDir string
-	if link == "" || link == "/" {
+	u, err := url.Parse(link)
+	p := strings.TrimSpace(u.Path)
+	if p == "" || p == "/" {
 		fileName = filepath.Join(projectPath, "/", "index.html")
 	} else {
-		u, err := url.Parse(link)
-		p := strings.TrimSpace(u.Path)
 		dirPath, base := filepath.Split(p)
 		if base == "" {
 			base = "index.html"
 		}
-
 		if filepath.Ext(base) == "" {
 			dirPath = u.Path
 			base = "index.html"
@@ -38,7 +37,7 @@ func HTMLExtractor(link string, projectPath string) {
 		os.MkdirAll(fileDir, os.ModePerm)
 	}
 
-	fmt.Println("Extracting --> ", link)
+	fmt.Printf("Extracting %s --> %s", link, fileName)
 	// get the html body
 	resp, err := http.Get(link)
 	if err != nil {
@@ -49,7 +48,7 @@ func HTMLExtractor(link string, projectPath string) {
 
 	//fmt.Printf("path:%s, name:%s", fileDir, fileName)
 	// get the project name and path we use the path to
-	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0777)
+	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		panic(err)
 	}
