@@ -52,7 +52,7 @@ func Collector(urlStr string, projectPath string) {
 	// recursive internal link
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		// src attribute
-		link := e.Attr("href")
+		link := strings.TrimSpace(e.Attr("href"))
 		if strings.HasPrefix(link, "/") || strings.HasPrefix(link, ".") {
 			// Print link
 			fmt.Printf("\n\n>>>========================<<<\nSublink href: %s\n", link)
