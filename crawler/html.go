@@ -56,7 +56,7 @@ func HTMLExtractor(link string, projectPath string) {
 	resp, err := client.Get(link)
 	//resp, err := http.Get(link)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	// Close the body once everything else is compled
 	defer resp.Body.Close()
@@ -68,11 +68,12 @@ func HTMLExtractor(link string, projectPath string) {
 		fmt.Println(err)
 	}
 	defer f.Close()
-	htmlData, err := ioutil.ReadAll(resp.Body)
 
-	if err != nil {
-		panic(err)
+	htmlData, err := ioutil.ReadAll(resp.Body)
+	if err == nil {
+		f.Write(htmlData)
+	} else {
+		fmt.Println(err)
 	}
-	f.Write(htmlData)
 
 }
