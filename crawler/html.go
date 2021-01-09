@@ -51,7 +51,7 @@ func HTMLExtractor(link string, projectPath string) {
 	fmt.Printf("Extracting HTML %s --> %s\n", link, fileName)
 	// get the html body
 	client := &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: 30 * time.Second,
 	}
 
 	resp, err := client.Get(link)
