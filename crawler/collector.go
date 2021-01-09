@@ -79,7 +79,7 @@ func Collector(urlStr string, projectPath string) {
 		//u, _ := url.Parse(l)
 		//link := u.Path
 		//link = strings.TrimSpace(link)
-		if !strings.HasPrefix(link, "http") && !strings.HasPrefix(link, "javascript") {
+		if !strings.HasPrefix(link, "javascript") {
 			// Print link
 			fmt.Printf("\n>>>>>> reflush: %s\n", link)
 			sublink := e.Request.AbsoluteURL(link)
@@ -91,8 +91,8 @@ func Collector(urlStr string, projectPath string) {
 			if base == "" {
 				base = "index.html"
 			}
-
-			if filepath.Ext(base) == "" {
+			fileExt := filepath.Ext(base)
+			if fileExt == "" || fileExt == "php" {
 				dirPath = u.Path
 				base = "index.html"
 			}
@@ -101,7 +101,7 @@ func Collector(urlStr string, projectPath string) {
 			// Check if page has downloaded
 			_, err = os.Stat(fileName)
 			if err != nil {
-				//Collector(sublink, projectPath)
+				Collector(sublink, projectPath)
 			}
 		}
 	})
