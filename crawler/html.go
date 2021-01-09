@@ -53,7 +53,6 @@ func HTMLExtractor(link string, projectPath string) {
 	client := &http.Client{
 		Timeout: 30 * time.Second,
 	}
-
 	resp, err := client.Get(link)
 	//resp, err := http.Get(link)
 	if err != nil {
@@ -66,7 +65,7 @@ func HTMLExtractor(link string, projectPath string) {
 	// get the project name and path we use the path to
 	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	defer f.Close()
 	htmlData, err := ioutil.ReadAll(resp.Body)
