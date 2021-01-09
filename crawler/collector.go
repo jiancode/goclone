@@ -13,7 +13,7 @@ func Collector(url string, projectPath string) {
 	// create a new collector
 	c := colly.NewCollector(
 		// asynchronous boolean
-		colly.Async(true),
+		colly.Async(false),
 	)
 
 	// search for all link tags that have a rel attribute that is equal to stylesheet - CSS
@@ -50,11 +50,14 @@ func Collector(url string, projectPath string) {
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		// src attribute
 		link := e.Attr("href")
-		if !strings.HasPrefix(link, "http") {
+		if strings.HasPrefix(link, "/") || strings.HasPrefix(link, ".") {
 			// Print link
 			fmt.Printf("%s href internal link found --> %s\n", url, link)
+			sublink := e.Request.AbsoluteURL(link)
+			fmt.Printf("Downloading %s\n", sublink)
 			// extraction
-			//Collector(e.Request.AbsoluteURL(link), projectPath)
+			c.Visit(sublink)
+			//Collector(sublink, projectPath)
 		}
 	})
 

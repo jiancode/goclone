@@ -4,21 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
-)
-
-// file extension map for directing files to their proper directory in O(1) time
-var (
-	extensionDir = map[string]string{
-		".css":  "css",
-		".js":   "js",
-		".jpg":  "imgs",
-		".jpeg": "imgs",
-		".gif":  "imgs",
-		".png":  "imgs",
-		".svg":  "imgs",
-	}
 )
 
 // Extractor visits a link determines if its a page or sublink
@@ -36,28 +24,10 @@ func Extractor(link string, projectPath string) {
 
 	// Closure
 	defer resp.Body.Close()
-	/***
-	// file base
-	base := parser.URLFilename(link)
-	// store the old ext, in special cases the ext is weird ".css?a134fv"
-	oldExt := filepath.Ext(base)
-	// new file extension
-	ext := parser.URLExtension(link)
-	println("link base", base)
 
-	// checks if there was a valid extension
-	if ext != "" {
-		// checks if that extension has a directory path name associated with it
-		// from the extensionDir map
-		dirPath := extensionDir[ext]
-		if dirPath != "" {
-			// If extension and path are valid pass to writeFileToPath
-			writeFileToPath(projectPath, base, oldExt, ext, dirPath, resp)
-		}
-	}
-	***/
-	dirPath, base := filepath.Split(link)
-
+	u, err := url.Parse(link)
+	dirPath, base := filepath.Split(u.Path)
+	//fmt.Printf("Download file: %s %s", dirPath, base)
 	writeFileToPath(projectPath, base, dirPath, resp)
 }
 
