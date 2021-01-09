@@ -114,7 +114,7 @@ func Collector(urlStr string, projectPath string) {
 		//u, _ := url.Parse(l)
 		//link := u.Path
 		//link = strings.TrimSpace(link)
-		if !strings.HasPrefix(link, "http") && !strings.HasPrefix(link, "javascript") {
+		if !strings.HasPrefix(link, "http") && !strings.HasPrefix(link, "javascript") && !strings.HasPrefix(link, "#") {
 			// Print link
 			fmt.Printf("\n>>>>>> Sublink: %s\n", link)
 			sublink := e.Request.AbsoluteURL(link)
