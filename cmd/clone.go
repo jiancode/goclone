@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/imthaghost/goclone/crawler"
-	"github.com/imthaghost/goclone/file"
-	"github.com/imthaghost/goclone/html"
-	"github.com/imthaghost/goclone/parser"
-	"github.com/imthaghost/goclone/server"
+	"github.com/jianconnect/goclone/crawler"
+	"github.com/jianconnect/goclone/file"
+	"github.com/jianconnect/goclone/html"
+	"github.com/jianconnect/goclone/parser"
+	"github.com/jianconnect/goclone/server"
 )
 
 // Clone the given site :)

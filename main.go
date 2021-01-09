@@ -1,6 +1,6 @@
 package main
 
-import "github.com/imthaghost/goclone/cmd"
+import "github.com/jianconnect/goclone/cmd"
 
 func main() {
 	cmd.Execute()
