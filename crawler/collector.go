@@ -10,6 +10,20 @@ import (
 	"github.com/gocolly/colly"
 )
 
+func afterStr(value string, a string) string {
+	// Get substring after a string.
+	pos := strings.LastIndex(value, a)
+	if pos == -1 {
+		return ""
+	}
+	adjustedPos := pos + len(a)
+	vl := len(value)
+	if adjustedPos >= vl {
+		return ""
+	}
+	return value[adjustedPos:vl]
+}
+
 // Collector searches for css, js, and images within a given link
 // TODO improve for better performance
 func Collector(urlStr string, projectPath string) {
@@ -50,12 +64,18 @@ func Collector(urlStr string, projectPath string) {
 	})
 
 	// recursive internal link
-	c.OnHTML("meta[http-equiv=refresh]", func(e *colly.HTMLElement) {
-		// src attribute
-		fmt.Println("\n", e)
-		fmt.Println(e.Attr("http-equiv"))
-		fmt.Println(e.Attr("content"))
-		link := e.Attr("url")
+	c.OnHTML("meta[http-equiv]", func(e *colly.HTMLElement) {
+
+		var link string
+
+		// http-equiv=refresh attribute
+		if e.Attr("http-equiv") == "refresh" {
+			c := e.Attr("content")
+			link = afterStr(c, "url=")
+		} else {
+			return
+		}
+		//link = e.Attr("url")
 		//u, _ := url.Parse(l)
 		//link := u.Path
 		//link = strings.TrimSpace(link)
