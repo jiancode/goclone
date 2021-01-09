@@ -29,6 +29,7 @@ func afterStr(value string, a string) string {
 func Collector(urlStr string, projectPath string) {
 	// create a new collector
 	c := colly.NewCollector(
+		colly.UserAgent("Mozilla/5.0"),
 		// asynchronous boolean
 		colly.Async(false),
 	)
