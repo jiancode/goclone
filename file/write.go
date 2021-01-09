@@ -8,7 +8,7 @@ import (
 // CreateProject initializes the project directory and returns the path to the project
 // TODO make function more modular to obtain different html files
 func CreateProject(projectName string) string {
-	// current workin directory
+	// current work in directory
 	path := currentDirectory()
 
 	// define project path
@@ -23,7 +23,7 @@ func CreateProject(projectName string) string {
 	createJS(projectPath)
 	createIMG(projectPath)
 
-	// main inedx file
+	// main index file
 	_, err = os.Create(projectPath + "/" + "index.html")
 	check(err)
 	// project path
