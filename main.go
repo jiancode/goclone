@@ -4,10 +4,20 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/jianconnect/goclone/crawler"
-	"github.com/jianconnect/goclone/file"
 )
+
+func createHomeFolder(projectName string) (projectPath string, err error) {
+	curPath, _ := os.Getwd()
+	// define project path
+	projectPath = filepath.Join(curPath, "/", projectName)
+
+	// create base directory
+	err = os.MkdirAll(projectPath, 0755)
+	return projectPath, err
+}
 
 func main() {
 	urlStr := os.Args[1]
@@ -18,11 +28,12 @@ func main() {
 	} else {
 		name := u.Hostname()
 		// CreateProject
-		projectpath := file.CreateProject(name)
-		// create the url
-		//validURL := parser.CreateURL(name)
-		// Crawler
-		crawler.Crawl(urlStr, projectpath)
+		projectpath, err := createHomeFolder(name)
+		if err != nil {
+			fmt.Printf("Setup project home folder err: %v", err)
+		} else {
+			crawler.Crawl(urlStr, projectpath)
+		}
 	}
 
 }
