@@ -50,8 +50,9 @@ func Collector(urlStr string, projectPath string) {
 	})
 
 	// recursive internal link
-	c.OnHTML("meta[url]", func(e *colly.HTMLElement) {
+	c.OnHTML("meta[http-equiv=refresh]", func(e *colly.HTMLElement) {
 		// src attribute
+		fmt.Println(e)
 		link := e.Attr("url")
 		//u, _ := url.Parse(l)
 		//link := u.Path
