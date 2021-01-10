@@ -105,14 +105,16 @@ func HTMLExtractor(link string, projectPath string) {
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		fmt.Println("Error loading HTTP response body. ", err)
-	}
-	// Find all links and process
-	doc.Find("a").Each(modHref)
-	htmlData, err := doc.Html()
-	if err == nil {
-		f.WriteString(htmlData)
+		f.WriteString("<html><body><p>Download page error!</p></body></html>")
 	} else {
-		fmt.Println(err)
+		// Find all links and process
+		doc.Find("a").Each(modHref)
+		htmlData, err := doc.Html()
+		if err == nil {
+			f.WriteString(htmlData)
+		} else {
+			fmt.Println(err)
+		}
 	}
 	return
 }
