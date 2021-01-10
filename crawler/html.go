@@ -72,7 +72,6 @@ func modHref(index int, element *goquery.Selection) {
 		if ext == "" || ext == ".php" {
 			newhref := h + ".html"
 			element.SetAttr("href", newhref)
-			fmt.Printf(">>> %s \n", newhref)
 		}
 	}
 	return
@@ -80,6 +79,9 @@ func modHref(index int, element *goquery.Selection) {
 
 // HTMLExtractor ...
 func HTMLExtractor(link string, projectPath string) {
+
+	var htmlData string
+	var pageError bool
 
 	fileName, newPage := Link2FileName(link, projectPath)
 	if !newPage {
@@ -90,6 +92,8 @@ func HTMLExtractor(link string, projectPath string) {
 	resp, err := HTTPGet(link)
 	if err != nil {
 		fmt.Println(err)
+		htmlData = "<html><body><p>Download page error!</p></body></html>"
+		pageError = true
 	}
 	// Close the body once everything else is compled
 	defer resp.Body.Close()
@@ -101,20 +105,22 @@ func HTMLExtractor(link string, projectPath string) {
 		fmt.Println(err)
 	}
 	defer f.Close()
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	if err != nil {
-		fmt.Println("Error loading HTTP response body. ", err)
-	}
 
-	// Find all links and process
-	doc.Find("a").Each(modHref)
-
-	//htmlData, err := ioutil.ReadAll(resp.Body)
-	htmlData, err := doc.Html()
-	if err == nil {
+	if pageError {
 		f.WriteString(htmlData)
 	} else {
-		fmt.Println(err)
+		// Modify internel link
+		doc, err := goquery.NewDocumentFromReader(resp.Body)
+		if err != nil {
+			fmt.Println("Error loading HTTP response body. ", err)
+		}
+		// Find all links and process
+		doc.Find("a").Each(modHref)
+		htmlData, err = doc.Html()
+		if err == nil {
+			f.WriteString(htmlData)
+		} else {
+			fmt.Println(err)
+		}
 	}
-
 }
