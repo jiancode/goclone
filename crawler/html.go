@@ -101,13 +101,14 @@ func HTMLExtractor(link string, projectPath string) {
 	fmt.Printf("Extracting HTML %s --> %s\n", link, fileName)
 	// get the html body
 	resp, err := HTTPGet(link)
-	// Close the body once everything else is compled
-	defer resp.Body.Close()
 	if err != nil {
 		fmt.Println(err)
 		f.WriteString("<html><body><p>Download page error!</p></body></html>")
 		return
 	}
+
+	// Close the body once everything else is compled
+	defer resp.Body.Close()
 	// Modify internel link
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
