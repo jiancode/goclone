@@ -2,9 +2,77 @@ package crawler
 
 import (
 	"fmt"
-	"io/ioutil"
+	"net/url"
 	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 )
+
+// Link2FileName check if page is downloaded
+// Create file directory if its necessary
+func Link2FileName(link, projectPath string) (fileName string, newPage bool) {
+
+	var fileDir, base, dirPath string
+	newPage = true
+
+	u, err := url.Parse(link)
+	p := strings.TrimSpace(u.Path)
+	if p == "" || p == "/" {
+		fileName = filepath.Join(projectPath, "/", "index.html")
+	} else {
+		dirPath, base = filepath.Split(p)
+		if base == "" {
+			base = "index.html"
+		} else {
+			// Add .html extention to php pages
+			fileExt := filepath.Ext(base)
+			if fileExt == "" || fileExt == ".php" {
+				if u.RawQuery != "" {
+					base = base + "?" + u.RawQuery
+				}
+				base = base + ".html"
+			}
+			fileDir = filepath.Join(projectPath, dirPath)
+			fileName = filepath.Join(fileDir, base)
+			// Check if page has downloaded
+			_, err = os.Stat(fileName)
+			if err == nil {
+				newPage = false
+				return fileName, newPage
+			}
+			err = os.MkdirAll(fileDir, os.ModePerm)
+			if err != nil {
+				fmt.Println("Mkdir error:", err)
+			}
+		}
+	}
+
+	// Check if page has downloaded
+	_, err = os.Stat(fileName)
+	if err == nil {
+		newPage = false
+	}
+
+	return fileName, newPage
+}
+
+// This will get called for each HTML element found
+func modHref(index int, element *goquery.Selection) {
+	// See if the href attribute exists on the element
+	href, exists := element.Attr("href")
+	if exists {
+		h := strings.TrimSpace(href)
+		u, _ := url.Parse(h)
+		ext := filepath.Ext(u.Path)
+		if ext == "" || ext == ".php" {
+			newhref := h + ".html"
+			element.SetAttr("href", newhref)
+			fmt.Printf(">>> %s \n", newhref)
+		}
+	}
+}
 
 // HTMLExtractor ...
 func HTMLExtractor(link string, projectPath string) {
@@ -29,10 +97,18 @@ func HTMLExtractor(link string, projectPath string) {
 		fmt.Println(err)
 	}
 	defer f.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		fmt.Println("Error loading HTTP response body. ", err)
+	}
 
-	htmlData, err := ioutil.ReadAll(resp.Body)
+	// Find all links and process
+	doc.Find("a").Each(modHref)
+
+	//htmlData, err := ioutil.ReadAll(resp.Body)
+	htmlData, err := doc.Html()
 	if err == nil {
-		f.Write(htmlData)
+		f.WriteString(htmlData)
 	} else {
 		fmt.Println(err)
 	}

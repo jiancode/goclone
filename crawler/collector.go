@@ -2,9 +2,6 @@ package crawler
 
 import (
 	"fmt"
-	"net/url"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -24,55 +21,6 @@ func afterStr(value string, a string) string {
 	return value[adjustedPos:vl]
 }
 
-// Link2FileName check if page is downloaded
-// Create file directory if its necessary
-func Link2FileName(link, projectPath string) (fileName string, newPage bool) {
-
-	var fileDir, base, dirPath string
-	newPage = true
-
-	u, err := url.Parse(link)
-	p := strings.TrimSpace(u.Path)
-	if p == "" || p == "/" {
-		fileName = filepath.Join(projectPath, "/", "index.html")
-	} else {
-		dirPath, base = filepath.Split(p)
-		if base == "" {
-			base = "index.html"
-		}
-		fileExt := filepath.Ext(base)
-		if fileExt == "" || fileExt == ".php" {
-			if u.RawQuery != "" {
-				dirPath = p + "?" + u.RawQuery
-			} else {
-				dirPath = p
-			}
-			base = "index.html"
-		}
-
-		fileDir = filepath.Join(projectPath, dirPath)
-		fileName = filepath.Join(fileDir, base)
-		// Check if page has downloaded
-		_, err = os.Stat(fileName)
-		if err == nil {
-			newPage = false
-			return fileName, newPage
-		}
-		err = os.MkdirAll(fileDir, os.ModePerm)
-		if err != nil {
-			fmt.Println("Mkdir error:", err)
-		}
-	}
-
-	// Check if page has downloaded
-	_, err = os.Stat(fileName)
-	if err == nil {
-		newPage = false
-	}
-
-	return fileName, newPage
-}
-
 // Collector searches for css, js, and images within a given link
 // TODO improve for better performance
 func Collector(urlStr string, projectPath string) {
@@ -88,7 +36,7 @@ func Collector(urlStr string, projectPath string) {
 		// hyperlink reference
 		link := e.Attr("href")
 		// print css file was found
-		fmt.Println("Css found", "-->", link)
+		//fmt.Println("Css found", "-->", link)
 		// extraction
 		Extractor(e.Request.AbsoluteURL(link), projectPath)
 	})
@@ -98,7 +46,7 @@ func Collector(urlStr string, projectPath string) {
 		// src attribute
 		link := e.Attr("src")
 		// Print link
-		fmt.Println("Js found", "-->", link)
+		//fmt.Println("Js found", "-->", link)
 		// extraction
 		Extractor(e.Request.AbsoluteURL(link), projectPath)
 	})
@@ -108,7 +56,7 @@ func Collector(urlStr string, projectPath string) {
 		// src attribute
 		link := e.Attr("src")
 		// Print link
-		fmt.Println("Img found", "-->", link)
+		//fmt.Println("Img found", "-->", link)
 		// extraction
 		Extractor(e.Request.AbsoluteURL(link), projectPath)
 	})
