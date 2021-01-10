@@ -116,6 +116,15 @@ func HTMLExtractor(link string, projectPath string) {
 	} else {
 		// Find all links and process
 		doc.Find("a").Each(modHref)
+		// Modify refresh page
+		doc.Find("meta").Each(func(index int, e *goquery.Selection) {
+			he, found := e.Attr("http-equiv")
+			if found && he == "refresh" {
+				c, _ := e.Attr("content")
+				nc := strings.ReplaceAll(c, ".php", ".php.html")
+				e.SetAttr("content", nc)
+			}
+		})
 		htmlData, err := doc.Html()
 		if err == nil {
 			f.WriteString(htmlData)
