@@ -92,7 +92,7 @@ func HTMLExtractor(link string, projectPath string) {
 		return
 	}
 	// get the project name and path we use the path to
-	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0753)
+	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		fmt.Println(err)
 	}
