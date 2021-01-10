@@ -80,47 +80,39 @@ func modHref(index int, element *goquery.Selection) {
 // HTMLExtractor ...
 func HTMLExtractor(link string, projectPath string) {
 
-	var htmlData string
-	var pageError bool
-
 	fileName, newPage := Link2FileName(link, projectPath)
 	if !newPage {
 		return
 	}
-	fmt.Printf("Extracting HTML %s --> %s\n", link, fileName)
-	// get the html body
-	resp, err := HTTPGet(link)
-	if err != nil {
-		fmt.Println(err)
-		htmlData = "<html><body><p>Download page error!</p></body></html>"
-		pageError = true
-	}
-	// Close the body once everything else is compled
-	defer resp.Body.Close()
-
-	//fmt.Printf("path:%s, name:%s", fileDir, fileName)
 	// get the project name and path we use the path to
-	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0755)
+	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0753)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer f.Close()
 
-	if pageError {
+	fmt.Printf("Extracting HTML %s --> %s\n", link, fileName)
+	// get the html body
+	resp, err := HTTPGet(link)
+	// Close the body once everything else is compled
+	defer resp.Body.Close()
+	if err != nil {
+		fmt.Println(err)
+		f.WriteString("<html><body><p>Download page error!</p></body></html>")
+		return
+	}
+	// Modify internel link
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		fmt.Println("Error loading HTTP response body. ", err)
+	}
+	// Find all links and process
+	doc.Find("a").Each(modHref)
+	htmlData, err := doc.Html()
+	if err == nil {
 		f.WriteString(htmlData)
 	} else {
-		// Modify internel link
-		doc, err := goquery.NewDocumentFromReader(resp.Body)
-		if err != nil {
-			fmt.Println("Error loading HTTP response body. ", err)
-		}
-		// Find all links and process
-		doc.Find("a").Each(modHref)
-		htmlData, err = doc.Html()
-		if err == nil {
-			f.WriteString(htmlData)
-		} else {
-			fmt.Println(err)
-		}
+		fmt.Println(err)
 	}
+	return
 }
