@@ -3,53 +3,16 @@ package crawler
 import (
 	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
-	"path/filepath"
-	"strings"
 )
 
 // HTMLExtractor ...
 func HTMLExtractor(link string, projectPath string) {
-	var fileName, fileDir, base, dirPath string
-	u, err := url.Parse(link)
-	p := strings.TrimSpace(u.Path)
-	if p == "" || p == "/" {
-		fileName = filepath.Join(projectPath, "/", "index.html")
-	} else {
-		dirPath, base = filepath.Split(p)
-		if base == "" {
-			base = "index.html"
-		}
-		fileExt := filepath.Ext(base)
-		if fileExt == "" || fileExt == ".php" {
-			if u.RawQuery != "" {
-				dirPath = p + "?" + u.RawQuery
-			} else {
-				dirPath = p
-			}
-			base = "index.html"
-		}
 
-		fileDir = filepath.Join(projectPath, dirPath)
-		fileName = filepath.Join(fileDir, base)
-		// Check if page has downloaded
-		_, err = os.Stat(fileName)
-		if err == nil {
-			return
-		}
-		err = os.MkdirAll(fileDir, os.ModePerm)
-		if err != nil {
-			fmt.Println("Mkdir error:", err)
-		}
-	}
-
-	// Check if page has downloaded
-	_, err = os.Stat(fileName)
-	if err == nil {
+	fileName, newPage := Link2FileName(link, projectPath)
+	if !newPage {
 		return
 	}
-
 	fmt.Printf("Extracting HTML %s --> %s\n", link, fileName)
 	// get the html body
 	resp, err := HTTPGet(link)

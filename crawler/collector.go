@@ -2,6 +2,9 @@ package crawler
 
 import (
 	"fmt"
+	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -19,6 +22,55 @@ func afterStr(value string, a string) string {
 		return ""
 	}
 	return value[adjustedPos:vl]
+}
+
+// Link2FileName check if page is downloaded
+// Create file directory if its necessary
+func Link2FileName(link, projectPath string) (fileName string, newPage bool) {
+
+	var fileDir, base, dirPath string
+	newPage = true
+
+	u, err := url.Parse(link)
+	p := strings.TrimSpace(u.Path)
+	if p == "" || p == "/" {
+		fileName = filepath.Join(projectPath, "/", "index.html")
+	} else {
+		dirPath, base = filepath.Split(p)
+		if base == "" {
+			base = "index.html"
+		}
+		fileExt := filepath.Ext(base)
+		if fileExt == "" || fileExt == ".php" {
+			if u.RawQuery != "" {
+				dirPath = p + "?" + u.RawQuery
+			} else {
+				dirPath = p
+			}
+			base = "index.html"
+		}
+
+		fileDir = filepath.Join(projectPath, dirPath)
+		fileName = filepath.Join(fileDir, base)
+		// Check if page has downloaded
+		_, err = os.Stat(fileName)
+		if err == nil {
+			newPage = false
+			return fileName, newPage
+		}
+		err = os.MkdirAll(fileDir, os.ModePerm)
+		if err != nil {
+			fmt.Println("Mkdir error:", err)
+		}
+	}
+
+	// Check if page has downloaded
+	_, err = os.Stat(fileName)
+	if err == nil {
+		newPage = false
+	}
+
+	return fileName, newPage
 }
 
 // Collector searches for css, js, and images within a given link
@@ -76,10 +128,13 @@ func Collector(urlStr string, projectPath string) {
 
 		if !strings.HasPrefix(link, "javascript") {
 			// Print link
-			fmt.Printf("\n>>>>>> reflush: %s\n", link)
-			sublink := e.Request.AbsoluteURL(link)
-			fmt.Printf("Visiting %s\n", sublink)
-			Collector(sublink, projectPath)
+			_, newPage := Link2FileName(link, projectPath)
+			if newPage {
+				fmt.Printf("\n>>>>>> reflush: %s\n", link)
+				sublink := e.Request.AbsoluteURL(link)
+				fmt.Printf("Visiting %s\n", sublink)
+				Collector(sublink, projectPath)
+			}
 		}
 	})
 
@@ -88,11 +143,13 @@ func Collector(urlStr string, projectPath string) {
 		// src attribute
 		link := e.Attr("href")
 		if !strings.HasPrefix(link, "http") && !strings.HasPrefix(link, "javascript") && !strings.HasPrefix(link, "#") {
-			// Print link
-			fmt.Printf("\n>>>>>> Sublink: %s\n", link)
-			sublink := e.Request.AbsoluteURL(link)
-			fmt.Printf("Visiting %s\n", sublink)
-			Collector(sublink, projectPath)
+			_, newPage := Link2FileName(link, projectPath)
+			if newPage {
+				fmt.Printf("\n>>>>>> Sublink: %s\n", link)
+				sublink := e.Request.AbsoluteURL(link)
+				fmt.Printf("Visiting %s\n", sublink)
+				Collector(sublink, projectPath)
+			}
 
 		}
 	})
