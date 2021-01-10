@@ -30,7 +30,7 @@ func Link2FileName(link, projectPath string) (fileName string, newPage bool) {
 			fileExt := filepath.Ext(base)
 			if fileExt == "" || fileExt == ".php" {
 				if u.RawQuery != "" {
-					base = base + "?" + u.RawQuery
+					base = base + "_" + pageFileName(u.RawQuery)
 				}
 				base = base + ".html"
 			}
@@ -70,11 +70,18 @@ func modHref(index int, element *goquery.Selection) {
 		u, _ := url.Parse(h)
 		ext := filepath.Ext(u.Path)
 		if ext == "" || ext == ".php" {
-			newhref := h + ".html"
+			newhref := pageFileName(h) + ".html"
 			element.SetAttr("href", newhref)
 		}
 	}
 	return
+}
+
+func pageFileName(f string) string {
+	f = strings.ReplaceAll(f, "&", "_")
+	f = strings.ReplaceAll(f, "?", "_")
+	f = strings.ReplaceAll(f, "=", "_")
+	return f
 }
 
 // HTMLExtractor ...
