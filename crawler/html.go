@@ -63,6 +63,9 @@ func modHref(index int, element *goquery.Selection) {
 	// See if the href attribute exists on the element
 	href, exists := element.Attr("href")
 	if exists {
+		if strings.HasPrefix(href, "#") {
+			return
+		}
 		h := strings.TrimSpace(href)
 		u, _ := url.Parse(h)
 		ext := filepath.Ext(u.Path)
@@ -72,6 +75,7 @@ func modHref(index int, element *goquery.Selection) {
 			fmt.Printf(">>> %s \n", newhref)
 		}
 	}
+	return
 }
 
 // HTMLExtractor ...
