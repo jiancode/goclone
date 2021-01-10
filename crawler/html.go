@@ -51,7 +51,13 @@ func HTMLExtractor(link string, projectPath string) {
 	client := &http.Client{
 		Timeout: 30 * time.Second,
 	}
-	resp, err := client.Get(link)
+	req, err := http.NewRequest("GET", link, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 Firefox")
+	resp, err := client.Do(req)
+	//resp, err := client.Get(link)
 	//resp, err := http.Get(link)
 	if err != nil {
 		fmt.Println(err)
