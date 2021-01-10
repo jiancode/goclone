@@ -3,12 +3,10 @@ package crawler
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 // HTMLExtractor ...
@@ -46,19 +44,15 @@ func HTMLExtractor(link string, projectPath string) {
 		}
 	}
 
+	// Check if page has downloaded
+	_, err = os.Stat(fileName)
+	if err == nil {
+		return
+	}
+
 	fmt.Printf("Extracting HTML %s --> %s\n", link, fileName)
 	// get the html body
-	client := &http.Client{
-		Timeout: 30 * time.Second,
-	}
-	req, err := http.NewRequest("GET", link, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 Firefox")
-	resp, err := client.Do(req)
-	//resp, err := client.Get(link)
-	//resp, err := http.Get(link)
+	resp, err := HTTPGet(link)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -26,7 +26,7 @@ func Extractor(link string, projectPath string) {
 
 	fmt.Println("Extracting new --> ", link)
 	// get the html body
-	resp, err := http.Get(link)
+	resp, err := HTTPGet(link)
 	if err != nil {
 		fmt.Println("Ignore bad link --> ", link)
 		//panic(err)

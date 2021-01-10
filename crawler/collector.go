@@ -2,9 +2,6 @@ package crawler
 
 import (
 	"fmt"
-	"net/url"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -76,34 +73,13 @@ func Collector(urlStr string, projectPath string) {
 		} else {
 			return
 		}
-		//link = e.Attr("url")
-		//u, _ := url.Parse(l)
-		//link := u.Path
-		//link = strings.TrimSpace(link)
+
 		if !strings.HasPrefix(link, "javascript") {
 			// Print link
 			fmt.Printf("\n>>>>>> reflush: %s\n", link)
 			sublink := e.Request.AbsoluteURL(link)
 			fmt.Printf("Visiting %s\n", sublink)
-
-			// extraction
-			u, err := url.Parse(sublink)
-			dirPath, base := filepath.Split(u.Path)
-			if base == "" {
-				base = "index.html"
-			}
-			fileExt := filepath.Ext(base)
-			if fileExt == "" || fileExt == ".php" {
-				dirPath = u.Path
-				base = "index.html"
-			}
-			fileDir := filepath.Join(projectPath, dirPath)
-			fileName := filepath.Join(fileDir, base)
-			// Check if page has downloaded
-			_, err = os.Stat(fileName)
-			if err != nil {
-				Collector(sublink, projectPath)
-			}
+			Collector(sublink, projectPath)
 		}
 	})
 
@@ -111,33 +87,12 @@ func Collector(urlStr string, projectPath string) {
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		// src attribute
 		link := e.Attr("href")
-		//u, _ := url.Parse(l)
-		//link := u.Path
-		//link = strings.TrimSpace(link)
 		if !strings.HasPrefix(link, "http") && !strings.HasPrefix(link, "javascript") && !strings.HasPrefix(link, "#") {
 			// Print link
 			fmt.Printf("\n>>>>>> Sublink: %s\n", link)
 			sublink := e.Request.AbsoluteURL(link)
 			fmt.Printf("Visiting %s\n", sublink)
-
-			// extraction
-			u, err := url.Parse(sublink)
-			dirPath, base := filepath.Split(u.Path)
-			if base == "" {
-				base = "index.html"
-			}
-
-			if filepath.Ext(base) == "" {
-				dirPath = u.Path
-				base = "index.html"
-			}
-			fileDir := filepath.Join(projectPath, dirPath)
-			fileName := filepath.Join(fileDir, base)
-			// Check if page has downloaded
-			_, err = os.Stat(fileName)
-			if err != nil {
-				Collector(sublink, projectPath)
-			}
+			Collector(sublink, projectPath)
 
 		}
 	})
