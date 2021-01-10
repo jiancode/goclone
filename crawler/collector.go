@@ -125,14 +125,12 @@ func Collector(urlStr string, projectPath string) {
 		} else {
 			return
 		}
-
 		if !strings.HasPrefix(link, "javascript") {
+			sublink := e.Request.AbsoluteURL(link)
 			// Print link
-			_, newPage := Link2FileName(link, projectPath)
+			_, newPage := Link2FileName(sublink, projectPath)
 			if newPage {
-				fmt.Printf("\n>>>>>> reflush: %s\n", link)
-				sublink := e.Request.AbsoluteURL(link)
-				fmt.Printf("Visiting %s\n", sublink)
+				fmt.Printf("\n>>>>>> reflush: %s\n", sublink)
 				Collector(sublink, projectPath)
 			}
 		}
@@ -143,11 +141,10 @@ func Collector(urlStr string, projectPath string) {
 		// src attribute
 		link := e.Attr("href")
 		if !strings.HasPrefix(link, "http") && !strings.HasPrefix(link, "javascript") && !strings.HasPrefix(link, "#") {
-			_, newPage := Link2FileName(link, projectPath)
+			sublink := e.Request.AbsoluteURL(link)
+			_, newPage := Link2FileName(sublink, projectPath)
 			if newPage {
-				fmt.Printf("\n>>>>>> Sublink: %s\n", link)
-				sublink := e.Request.AbsoluteURL(link)
-				fmt.Printf("Visiting %s\n", sublink)
+				fmt.Printf("\n>>>>>> Sublink: %s\n", sublink)
 				Collector(sublink, projectPath)
 			}
 
