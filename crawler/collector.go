@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -25,10 +26,12 @@ func afterStr(value string, a string) string {
 // TODO improve for better performance
 func Collector(urlStr string, projectPath string) {
 	// create a new collector
+	u, _ := url.Parse(urlStr)
 	c := colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0"),
 		// asynchronous boolean
 		colly.Async(false),
+		colly.AllowedDomains(u.Hostname()),
 	)
 
 	// search for all link tags that have a rel attribute that is equal to stylesheet - CSS
