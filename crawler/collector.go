@@ -64,6 +64,26 @@ func Collector(urlStr string, projectPath string) {
 		Extractor(e.Request.AbsoluteURL(link), projectPath)
 	})
 
+	// search for all img tags with pic-src attribute -- Images
+	c.OnHTML("img[pic-src]", func(e *colly.HTMLElement) {
+		// src attribute
+		link := e.Attr("pic-src")
+		// Print link
+		//fmt.Println("Img found", "-->", link)
+		// extraction
+		Extractor(e.Request.AbsoluteURL(link), projectPath)
+	})
+
+	// search for all img tags with src attribute -- Images
+	c.OnHTML("img[webppic-src]", func(e *colly.HTMLElement) {
+		// src attribute
+		link := e.Attr("webppic-src")
+		// Print link
+		//fmt.Println("Img found", "-->", link)
+		// extraction
+		Extractor(e.Request.AbsoluteURL(link), projectPath)
+	})
+
 	// recursive internal link
 	c.OnHTML("meta[http-equiv]", func(e *colly.HTMLElement) {
 
