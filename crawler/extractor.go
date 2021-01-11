@@ -15,6 +15,10 @@ import (
 func Extractor(link string, projectPath string) {
 
 	u, err := url.Parse(link)
+	_, b := filepath.Split(projectPath)
+	if b != u.Hostname() {
+		return
+	}
 	dirPath, base := filepath.Split(u.Path)
 	//fmt.Printf("Download file: %s %s", dirPath, base)
 	fileName := filepath.Join(projectPath, dirPath, base)
