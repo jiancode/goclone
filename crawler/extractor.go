@@ -17,6 +17,7 @@ func Extractor(link string, projectPath string) {
 	u, err := url.Parse(link)
 	_, b := filepath.Split(projectPath)
 	if b != u.Hostname() {
+		fmt.Println("Get hostname error!")
 		return
 	}
 	dirPath, base := filepath.Split(u.Path)
@@ -25,6 +26,7 @@ func Extractor(link string, projectPath string) {
 
 	_, err = os.Stat(fileName)
 	if err == nil {
+		fmt.Println("create output file error:", fileName)
 		return
 	}
 
