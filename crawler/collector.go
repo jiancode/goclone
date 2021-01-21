@@ -3,7 +3,6 @@ package crawler
 import (
 	"fmt"
 	"net/url"
-	"path"
 	"regexp"
 	"strings"
 
@@ -33,8 +32,9 @@ func parseHTML(a, s, p string) {
 	d.Find("link").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("href")
 		if found {
-			fmt.Println("Check link in js:", path.Join(a, h))
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			fmt.Println("Check link in js:", l)
+			Extractor(l, p)
 		}
 	})
 
@@ -42,15 +42,18 @@ func parseHTML(a, s, p string) {
 		h, found := e.Attr("src")
 		fmt.Println("video src", h)
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 		h, found = e.Attr("pic-src")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 		h, found = e.Attr("webppic-src")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 	})
 
@@ -58,38 +61,46 @@ func parseHTML(a, s, p string) {
 		h, found := e.Attr("src")
 		fmt.Println("video src", h)
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 		h, found = e.Attr("image")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 		h, found = e.Attr("file")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 		h, found = e.Attr("poster")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 	})
 
 	d.Find("embed").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("src")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 		h, found = e.Attr("image")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 		h, found = e.Attr("file")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 		h, found = e.Attr("poster")
 		if found {
-			Extractor(path.Join(a, h), p)
+			l := a + h
+			Extractor(l, p)
 		}
 	})
 

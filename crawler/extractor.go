@@ -26,7 +26,7 @@ func Extractor(link string, projectPath string) {
 
 	_, err = os.Stat(fileName)
 	if err == nil {
-		fmt.Println("create output file error:", fileName)
+		// file existed
 		return
 	}
 
