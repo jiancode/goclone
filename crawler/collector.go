@@ -111,6 +111,15 @@ func jsLink(absURL, pStr, pPath string) {
 		//fmt.Println("Find js link:", s[1])
 		parseHTML(absURL, s[1], pPath)
 	}
+	itemMatch := regexp.MustCompile(`addItem\((.*)\)`)
+	hstr = itemMatch.FindAllStringSubmatch(pStr, -1)
+	// oNode.addItem("QS2015光栅闭环保护+精度补偿版本", "/product/index/id/4234/lang/cn");
+	for _, s := range hstr {
+		s1 := strings.Split(s[1], ",")
+		s2 := strings.TrimSpace(s1[1])
+		l := absURL + strings.Trim(s2, "\"")
+		Collector(l, pPath)
+	}
 }
 
 // Collector searches for css, js, and images within a given link
