@@ -98,7 +98,7 @@ func jsLink(absURL, pStr, pPath string) {
 	gMatch := regexp.MustCompile(`document.writeln\(\'(.*)\'\)`)
 	hstr := gMatch.FindAllStringSubmatch(pStr, -1)
 	for _, s := range hstr {
-		//fmt.Println(s)
+		fmt.Println("Find js link:", s)
 		parseHTML(absURL, s[1], pPath)
 	}
 }
@@ -132,9 +132,9 @@ func Collector(urlStr string, projectPath string) {
 		// Print link
 		//fmt.Println("Js found", "-->", link)
 		// extraction
-		Extractor(e.Request.AbsoluteURL(link), projectPath)
 		pageStr := e.DOM.Contents().Text()
 		absURL := e.Request.AbsoluteURL("")
+		Extractor(e.Request.AbsoluteURL(link), projectPath)
 		jsLink(absURL, pageStr, projectPath)
 	})
 
