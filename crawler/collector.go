@@ -145,7 +145,7 @@ func Collector(urlStr string, projectPath string) {
 	)
 
 	// search for all link tags that have a rel attribute that is equal to stylesheet - CSS
-	c.OnHTML("link[rel='stylesheet']", func(e *colly.HTMLElement) {
+	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		// hyperlink reference
 		link := e.Attr("href")
 		// print css file was found
