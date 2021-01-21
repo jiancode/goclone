@@ -3,8 +3,11 @@ package crawler
 import (
 	"fmt"
 	"net/url"
+	"path"
+	"regexp"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
 
@@ -20,6 +23,84 @@ func afterStr(value string, a string) string {
 		return ""
 	}
 	return value[adjustedPos:vl]
+}
+
+func parseHTML(a, s, p string) {
+	d, err := goquery.NewDocumentFromReader(strings.NewReader(s))
+	if err != nil {
+		fmt.Println(err)
+	}
+	d.Find("link").Each(func(index int, e *goquery.Selection) {
+		h, found := e.Attr("href")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+	})
+
+	d.Find("img").Each(func(index int, e *goquery.Selection) {
+		h, found := e.Attr("src")
+		fmt.Println("video src", h)
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+		h, found = e.Attr("pic-src")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+		h, found = e.Attr("webppic-src")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+	})
+
+	d.Find("video").Each(func(index int, e *goquery.Selection) {
+		h, found := e.Attr("src")
+		fmt.Println("video src", h)
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+		h, found = e.Attr("image")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+		h, found = e.Attr("file")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+		h, found = e.Attr("poster")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+	})
+
+	d.Find("embed").Each(func(index int, e *goquery.Selection) {
+		h, found := e.Attr("src")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+		h, found = e.Attr("image")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+		h, found = e.Attr("file")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+		h, found = e.Attr("poster")
+		if found {
+			Extractor(path.Join(a, h), p)
+		}
+	})
+
+}
+
+func jsLink(absURL, pStr, pPath string) {
+	gMatch := regexp.MustCompile(`document.writeln\(\'(.*)\'\)`)
+	hstr := gMatch.FindAllStringSubmatch(pStr, -1)
+	for _, s := range hstr {
+		//fmt.Println(s)
+		parseHTML(absURL, s[1], pPath)
+	}
 }
 
 // Collector searches for css, js, and images within a given link
@@ -52,6 +133,9 @@ func Collector(urlStr string, projectPath string) {
 		//fmt.Println("Js found", "-->", link)
 		// extraction
 		Extractor(e.Request.AbsoluteURL(link), projectPath)
+		pageStr := e.DOM.Contents().Text()
+		absURL := e.Request.AbsoluteURL("")
+		jsLink(absURL, pageStr, projectPath)
 	})
 
 	// search for all img tags with src attribute -- Images
