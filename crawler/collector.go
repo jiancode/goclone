@@ -36,7 +36,11 @@ func callSubLink(urlHost, link, projectPath string) {
 }
 
 func parseHTML(a, s, p string) {
-	d, err := goquery.NewDocumentFromReader(strings.NewReader(s))
+	// document.write(unescape("%3Cscript defer='defer' src='/Index/js/jcarousellite.js' type='text/javascript'%3E%3C/script%3E"));
+	s1 := strings.TrimLeft(s, "unescape(\"")
+	s2 := strings.TrimRight(s1, ")\"")
+	s3, _ := url.QueryUnescape(s2)
+	d, err := goquery.NewDocumentFromReader(strings.NewReader(s3))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -50,6 +54,14 @@ func parseHTML(a, s, p string) {
 
 	d.Find("source").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("srcset")
+		if found {
+			l := a + h
+			Extractor(l, p)
+		}
+	})
+
+	d.Find("script").Each(func(index int, e *goquery.Selection) {
+		h, found := e.Attr("src")
 		if found {
 			l := a + h
 			Extractor(l, p)
@@ -123,10 +135,9 @@ func parseHTML(a, s, p string) {
 }
 
 func jsLink(absURL, pStr, pPath string) {
-	gMatch := regexp.MustCompile(`document.write\w{0,2}\(\'(.*)\'\)`)
+	gMatch := regexp.MustCompile(`document.write\w{0,2}\(\'?(.*)\'\?)`)
 	hstr := gMatch.FindAllStringSubmatch(pStr, -1)
 	for _, s := range hstr {
-		//fmt.Println("Find js link:", s[1])
 		parseHTML(absURL, s[1], pPath)
 	}
 	itemMatch := regexp.MustCompile(`addItem\((.*)\)`)
