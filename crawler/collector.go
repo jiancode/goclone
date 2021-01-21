@@ -32,6 +32,7 @@ func parseHTML(a, s, p string) {
 	}
 	d.Find("link").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("href")
+		fmt.Println("Check link in js:", h)
 		if found {
 			Extractor(path.Join(a, h), p)
 		}
@@ -98,7 +99,7 @@ func jsLink(absURL, pStr, pPath string) {
 	gMatch := regexp.MustCompile(`document.writeln\(\'(.*)\'\)`)
 	hstr := gMatch.FindAllStringSubmatch(pStr, -1)
 	for _, s := range hstr {
-		fmt.Println("Find js link:", s)
+		//fmt.Println("Find js link:", s[1])
 		parseHTML(absURL, s[1], pPath)
 	}
 }
