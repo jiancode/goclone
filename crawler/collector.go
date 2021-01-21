@@ -32,7 +32,7 @@ func parseHTML(a, s, p string) {
 	}
 	d.Find("link").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("href")
-		fmt.Println("Check link in js:", h)
+		fmt.Println("Check link in js:", path.Join(a, h))
 		if found {
 			Extractor(path.Join(a, h), p)
 		}
