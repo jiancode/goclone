@@ -137,7 +137,7 @@ func Collector(urlStr string, projectPath string) {
 	// search for all link, image and video in javascript
 	c.OnHTML("script", func(e *colly.HTMLElement) {
 		pageStr := e.DOM.Contents().Text()
-		absURL := e.Request.AbsoluteURL("")
+		absURL := fmt.Sprintf("%s://%s", e.Request.URL.Scheme, e.Request.URL.Host)
 		//fmt.Println("script text:", pageStr)
 		jsLink(absURL, pageStr, projectPath)
 	})
