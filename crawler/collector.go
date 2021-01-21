@@ -24,6 +24,17 @@ func afterStr(value string, a string) string {
 	return value[adjustedPos:vl]
 }
 
+func callSubLink(urlHost, link, projectPath string) {
+	if !strings.HasPrefix(link, "http") && !strings.HasPrefix(link, "javascript") && !strings.HasPrefix(link, "#") {
+		sublink := urlHost + link
+		_, newPage := Link2FileName(sublink, projectPath)
+		if newPage {
+			fmt.Printf("\n>>>>>> Sublink: %s\n", sublink)
+			Collector(sublink, projectPath)
+		}
+	}
+}
+
 func parseHTML(a, s, p string) {
 	d, err := goquery.NewDocumentFromReader(strings.NewReader(s))
 	if err != nil {
@@ -32,9 +43,8 @@ func parseHTML(a, s, p string) {
 	d.Find("link").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("href")
 		if found {
-			l := a + h
+			callSubLink(a, h, p)
 			//fmt.Println("Check link in js:", l)
-			Extractor(l, p)
 		}
 	})
 
@@ -117,8 +127,8 @@ func jsLink(absURL, pStr, pPath string) {
 	for _, s := range hstr {
 		s1 := strings.Split(s[1], ",")
 		s2 := strings.TrimSpace(s1[1])
-		l := absURL + strings.Trim(s2, "\"")
-		Collector(l, pPath)
+		link := strings.Trim(s2, "\"")
+		callSubLink(absURL, link, pPath)
 	}
 }
 
@@ -224,7 +234,6 @@ func Collector(urlStr string, projectPath string) {
 				fmt.Printf("\n>>>>>> Sublink: %s\n", sublink)
 				Collector(sublink, projectPath)
 			}
-
 		}
 	})
 
