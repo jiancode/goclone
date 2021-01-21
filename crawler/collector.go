@@ -33,14 +33,13 @@ func parseHTML(a, s, p string) {
 		h, found := e.Attr("href")
 		if found {
 			l := a + h
-			fmt.Println("Check link in js:", l)
+			//fmt.Println("Check link in js:", l)
 			Extractor(l, p)
 		}
 	})
 
 	d.Find("img").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("src")
-		fmt.Println("video src", h)
 		if found {
 			l := a + h
 			Extractor(l, p)
@@ -59,7 +58,6 @@ func parseHTML(a, s, p string) {
 
 	d.Find("video").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("src")
-		fmt.Println("video src", h)
 		if found {
 			l := a + h
 			Extractor(l, p)

@@ -17,7 +17,7 @@ func Extractor(link string, projectPath string) {
 	u, err := url.Parse(link)
 	_, b := filepath.Split(projectPath)
 	if b != u.Hostname() {
-		fmt.Println("Get hostname error!", b, u)
+		fmt.Println("Igonre link:", link)
 		return
 	}
 	dirPath, base := filepath.Split(u.Path)
