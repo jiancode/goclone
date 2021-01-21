@@ -129,12 +129,15 @@ func Collector(urlStr string, projectPath string) {
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		// src attribute
 		link := e.Attr("src")
-		// Print link
-		//fmt.Println("Js found", "-->", link)
 		// extraction
+		Extractor(e.Request.AbsoluteURL(link), projectPath)
+	})
+
+	// search for all link, image and video in javascript
+	c.OnHTML("script", func(e *colly.HTMLElement) {
 		pageStr := e.DOM.Contents().Text()
 		absURL := e.Request.AbsoluteURL("")
-		Extractor(e.Request.AbsoluteURL(link), projectPath)
+		//fmt.Println("script text:", pageStr)
 		jsLink(absURL, pageStr, projectPath)
 	})
 
