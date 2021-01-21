@@ -48,6 +48,14 @@ func parseHTML(a, s, p string) {
 		}
 	})
 
+	d.Find("source").Each(func(index int, e *goquery.Selection) {
+		h, found := e.Attr("srcset")
+		if found {
+			l := a + h
+			Extractor(l, p)
+		}
+	})
+
 	d.Find("img").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("src")
 		if found {
