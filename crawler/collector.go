@@ -135,7 +135,7 @@ func parseHTML(a, s, p string) {
 }
 
 func jsLink(absURL, pStr, pPath string) {
-	gMatch := regexp.MustCompile(`document.write\w{0,2}\(\'?(.*)\'\?)`)
+	gMatch := regexp.MustCompile(`document.write\w{0,2}\(\'?(.*)\'?\)`)
 	hstr := gMatch.FindAllStringSubmatch(pStr, -1)
 	for _, s := range hstr {
 		parseHTML(absURL, s[1], pPath)
