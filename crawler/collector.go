@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 )
 
 func afterStr(value string, a string) string {
