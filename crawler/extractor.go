@@ -15,6 +15,10 @@ import (
 func Extractor(link string, projectPath string) {
 
 	u, err := url.Parse(link)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	_, b := filepath.Split(projectPath)
 	if b != u.Hostname() {
 		fmt.Println("Igonre link:", link)
