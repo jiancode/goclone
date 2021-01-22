@@ -28,7 +28,7 @@ func Link2FileName(link, projectPath string) (fileName string, newPage bool) {
 		} else {
 			// Add .html extention to php pages
 			fileExt := filepath.Ext(base)
-			if fileExt == "" || fileExt == ".php" {
+			if fileExt == "" || fileExt == ".php" || fileExt == ".phtml" {
 				if u.RawQuery != "" {
 					base = base + "_" + pageFileName(u.RawQuery)
 				}
@@ -69,7 +69,7 @@ func modHref(index int, element *goquery.Selection) {
 		h := strings.TrimSpace(href)
 		u, _ := url.Parse(h)
 		ext := filepath.Ext(u.Path)
-		if ext == "" || ext == ".php" {
+		if ext == "" || ext == ".php" || ext == ".phtml" {
 			newhref := pageFileName(h) + ".html"
 			element.SetAttr("href", newhref)
 		}
