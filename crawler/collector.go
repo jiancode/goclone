@@ -39,10 +39,15 @@ func parseHTML(a, s, p string) {
 	// document.write(unescape("%3Cscript defer='defer' src='/Index/js/jcarousellite.js' type='text/javascript'%3E%3C/script%3E"));
 	s1 := strings.TrimLeft(s, "unescape(\"")
 	s2 := strings.TrimRight(s1, ")\"")
-	s3, _ := url.QueryUnescape(s2)
+	s3, err := url.QueryUnescape(s2)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	d, err := goquery.NewDocumentFromReader(strings.NewReader(s3))
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	d.Find("link").Each(func(index int, e *goquery.Selection) {
 		h, found := e.Attr("href")
@@ -155,9 +160,13 @@ func jsLink(absURL, pStr, pPath string) {
 // TODO improve for better performance
 func Collector(urlStr string, projectPath string) {
 	// create a new collector
-	u, _ := url.Parse(urlStr)
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	c := colly.NewCollector(
-		colly.UserAgent("Mozilla/5.0"),
+		colly.UserAgent("Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0"),
 		// asynchronous boolean
 		colly.Async(false),
 		colly.AllowedDomains(u.Hostname()),
